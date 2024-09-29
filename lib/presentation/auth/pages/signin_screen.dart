@@ -4,10 +4,16 @@ import 'package:spotify/common/Widgets/Button/basic_app_button.dart';
 import 'package:spotify/common/helpers/is_dark_mode.dart';
 import 'package:spotify/core/config/assets/app_vectors.dart';
 import 'package:spotify/core/config/theme/app_colour.dart';
+import 'package:spotify/data/models/auth/signin_user_request.dart';
+import 'package:spotify/domain/usecases/auth/signin.dart';
 import 'package:spotify/presentation/auth/pages/signup_screen.dart';
+import 'package:spotify/presentation/home/pages/home.dart';
+import 'package:spotify/service_locator.dart';
 
 class SigninPage extends StatelessWidget {
-  const SigninPage({super.key});
+  SigninPage({super.key});
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,21 +53,37 @@ class SigninPage extends StatelessWidget {
           vertical: 50,
           horizontal: 30,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _sigInText(),
-            _needHelp(context),
-            _fullNameField(context, "Enter Username Or Email"),
-            SizedBox(
-              height: 20,
-            ),
-            _fullNameField(context, "Password"),
-            SizedBox(
-              height: 30,
-            ),
-            BasicAppButton(onPressed: () {}, title: 'Sign in')
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _sigInText(),
+              _needHelp(context),
+              _fullNameField(context, "Enter Username Or Email", _email),
+              SizedBox(
+                height: 20,
+              ),
+              _fullNameField(context, "Password", _password),
+              SizedBox(
+                height: 30,
+              ),
+              BasicAppButton(
+                  onPressed: () async {
+                    var result = await sl<SignInUseCase>().call(
+                        params: SignInUserRequest(_email.text, _password.text));
+                    result.fold((l) {
+                      var snackBar = SnackBar(content: Text(l));
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }, (r) {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                          (route) => false);
+                    });
+                  },
+                  title: 'Sign in')
+            ],
+          ),
         ),
       ),
     );
@@ -78,8 +100,10 @@ class SigninPage extends StatelessWidget {
     );
   }
 
-  Widget _fullNameField(BuildContext context, String hintText) {
+  Widget _fullNameField(
+      BuildContext context, String hintText, TextEditingController controller) {
     return TextField(
+      controller: controller,
       decoration: InputDecoration(hintText: hintText)
           .applyDefaults(Theme.of(context).inputDecorationTheme),
     );
