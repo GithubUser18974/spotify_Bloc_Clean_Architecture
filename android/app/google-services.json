@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "2993413480",
+    "project_id": "spotify-fa60d",
+    "storage_bucket": "spotify-fa60d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:2993413480:android:837ca88a76321dd1d28add",
+        "android_client_info": {
+          "package_name": "com.example.spotify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-oQbdOuU6Z3-zCyI-K0OM33Xl6z3Lbps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

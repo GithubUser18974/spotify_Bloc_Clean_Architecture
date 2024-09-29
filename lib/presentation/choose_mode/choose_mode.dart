@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:spotify/core/config/assets/app_images.dart';
 import 'package:spotify/core/config/assets/app_vectors.dart';
 import 'package:spotify/core/config/theme/app_colour.dart';
+import 'package:spotify/presentation/auth/pages/signup_or_signin.dart';
+import 'package:spotify/presentation/choose_mode/bloc/theme_cubit.dart';
 
 import '../../common/Widgets/Button/basic_app_button.dart';
 
-class ChooseModePage extends StatelessWidget {
-  const ChooseModePage({super.key});
+class ChooseModePage extends StatefulWidget {
+  ChooseModePage({super.key});
+
+  @override
+  State<ChooseModePage> createState() => _ChooseModePageState();
+}
+
+class _ChooseModePageState extends State<ChooseModePage> {
+  bool modeState = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    modeState = false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,18 +67,30 @@ class ChooseModePage extends StatelessWidget {
                   children: [
                     Column(
                       children: [
-                        Container(
-                          height: 90,
-                          width: 90,
-                          decoration: BoxDecoration(
-                            color: AppColour.darkGrayColour,
-                            shape: BoxShape.circle,
-                          ),
-                          child: SvgPicture.asset(
-                            AppVectors.moon,
-                            height: 36,
-                            width: 36,
-                            fit: BoxFit.none,
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              modeState = false;
+                            });
+                            context
+                                .read<ThemeCubit>()
+                                .updateTheme(ThemeMode.dark);
+                          },
+                          child: Container(
+                            height: 90,
+                            width: 90,
+                            decoration: BoxDecoration(
+                              color: modeState == false
+                                  ? AppColour.primaryColour
+                                  : AppColour.darkGrayColour,
+                              shape: BoxShape.circle,
+                            ),
+                            child: SvgPicture.asset(
+                              AppVectors.moon,
+                              height: 36,
+                              width: 36,
+                              fit: BoxFit.none,
+                            ),
                           ),
                         ),
                         Text(
@@ -80,18 +108,30 @@ class ChooseModePage extends StatelessWidget {
                     ),
                     Column(
                       children: [
-                        Container(
-                          height: 90,
-                          width: 90,
-                          decoration: BoxDecoration(
-                            color: AppColour.darkGrayColour,
-                            shape: BoxShape.circle,
-                          ),
-                          child: SvgPicture.asset(
-                            AppVectors.sun,
-                            height: 36,
-                            width: 36,
-                            fit: BoxFit.none,
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              modeState = true;
+                            });
+                            context
+                                .read<ThemeCubit>()
+                                .updateTheme(ThemeMode.light);
+                          },
+                          child: Container(
+                            height: 90,
+                            width: 90,
+                            decoration: BoxDecoration(
+                              color: modeState == true
+                                  ? AppColour.primaryColour
+                                  : AppColour.darkGrayColour,
+                              shape: BoxShape.circle,
+                            ),
+                            child: SvgPicture.asset(
+                              AppVectors.sun,
+                              height: 36,
+                              width: 36,
+                              fit: BoxFit.none,
+                            ),
                           ),
                         ),
                         SizedBox(
@@ -117,7 +157,7 @@ class ChooseModePage extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ChooseModePage()));
+                            builder: (context) => SignupOrSignInPage()));
                   },
                   title: "Continue",
                   height: 80,
