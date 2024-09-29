@@ -3,11 +3,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:spotify/common/Widgets/Button/basic_app_button.dart';
 import 'package:spotify/common/helpers/is_dark_mode.dart';
 import 'package:spotify/core/config/assets/app_vectors.dart';
+import 'package:spotify/data/models/auth/create_user_req.dart';
+import 'package:spotify/domain/usecases/auth/signup.dart';
 import 'package:spotify/presentation/auth/pages/signin_screen.dart';
+import 'package:spotify/service_locator.dart';
 
 class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key});
-
+  SignUpPage({super.key});
+  final TextEditingController _fullName = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,19 +59,29 @@ class SignUpPage extends StatelessWidget {
             SizedBox(
               height: 50,
             ),
-            _fullNameField(context, "Full Name"),
+            _fullNameField(context, "Full Name", _fullName),
             SizedBox(
               height: 20,
             ),
-            _fullNameField(context, "Email"),
+            _fullNameField(context, "Email", _email),
             SizedBox(
               height: 20,
             ),
-            _fullNameField(context, "Password"),
+            _fullNameField(context, "Password", _password),
             SizedBox(
               height: 30,
             ),
-            BasicAppButton(onPressed: () {}, title: 'Create Account')
+            BasicAppButton(
+                onPressed: () async {
+                  var result = await sl<SignUpUseCase>().call(
+                      params: CreateUserRequest(_email.text, _password.text,
+                          FullName: _fullName.text));
+                  result.fold((l) {
+                    var snackBar = SnackBar(content: Text(l));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }, (r) {});
+                },
+                title: 'Create Account')
           ],
         ),
       ),
@@ -84,8 +99,10 @@ class SignUpPage extends StatelessWidget {
     );
   }
 
-  Widget _fullNameField(BuildContext context, String hintText) {
+  Widget _fullNameField(
+      BuildContext context, String hintText, TextEditingController controller) {
     return TextField(
+      controller: controller,
       decoration: InputDecoration(hintText: hintText)
           .applyDefaults(Theme.of(context).inputDecorationTheme),
     );
